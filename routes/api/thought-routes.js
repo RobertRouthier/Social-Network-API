@@ -46,7 +46,7 @@ router.get('/:thoughtId', async (req,res)=> {
 //TODO: ROUTE TO UPDATE A THOUGHT
 router.put('/',  async (req,res)=> {
     try {
-    let updatedThought = await Thought.update(req.body, {
+    let updatedThought = await Thought.findByIdAndUpdate(req.body, {
         where: {
             id: req.body.id
         }

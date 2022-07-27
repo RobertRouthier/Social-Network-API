@@ -3,9 +3,9 @@ const router = require('express').Router();
 const {User} = require("../../models")
 
 //TODO - ROUTE THAT GETS ALL THE USERS, include friends?
-router.get('/', (req,res)=> {
+router.get('/', async (req,res)=> {
     try {
-        User.findAll({
+       let users = await User.find({
             include: [{
                 model: User,
                 as: "friends"
@@ -26,11 +26,11 @@ router.get('/', (req,res)=> {
 })
 
 //TODO - ROUTE THAT CREATES A NEW USER
-router.post('/', (req,res)=> {
+router.post('/', async (req,res)=> {
    try {
-       User.create(req.body)
+      let newUser = await User.create(req.body)
        .then(user => {
-           res.status(201).json(user)
+           res.status(201).json(newUser)
        }).catch(err => {
            console.log(err)
            res.status(500).json(err)
@@ -46,9 +46,9 @@ router.post('/', (req,res)=> {
 });
 
 //TODO - ROUTE THAT GETS A SINGLE USER BASED ON USER ID
-router.get('/:userId', (req,res) => {
+router.get('/:userId', async (req,res) => {
     try {
-        User.findById(req.params.userId, {
+        let user = await User.findById(req.params.userId, {
             include: [{
                 model: User,
                 as: "friends"
@@ -70,15 +70,15 @@ router.get('/:userId', (req,res) => {
 })
 
 //TODO - ROUTE THAT UPDATES A SINGLE USER
-router.put('/:userId', (req,res)=> {
+router.put('/:userId', async (req,res)=> {
    try {
-       User.update(req.body, {
+      let updatedUser = await User.update(req.body, {
            where: {
                id: req.params.userId
            }
        })
        .then(user => {
-           res.status(200).json(user)
+           res.status(200).json(updatedUser)
        }).catch(err => {
            console.log(err)
            res.status(500).json(err)
@@ -93,15 +93,15 @@ router.put('/:userId', (req,res)=> {
 })
 
 //TODO - ROUTE THAT DELETES A SINGLE USER BASED ON USER ID
-router.delete('/:userId', (req,res)=> {
+router.delete('/:userId', async (req,res)=> {
     try {
-        User.destroy({
+        let deletedUser = await User.destroy({
             where: {
                 id: req.params.userId
             }
         })
         .then(user => {
-            res.status(200).json(user)
+            res.status(200).json(deletedUser)
         }).catch(err => {
             console.log(err)
             res.status(500).json(err)
@@ -117,12 +117,12 @@ router.delete('/:userId', (req,res)=> {
 });
 
 //TODO - ROUTE THAT ADDS A FRIEND TO A USER
-router.put('/:userId/friends/:friendId', (req,res)=> {
+router.put('/:userId/friends/:friendId', async (req,res)=> {
     try {
-        User.findById(req.params.userId)
+       let newFriend = await User.findById(req.params.userId)
         .then(user => {
             user.addFriend(req.params.friendId)
-            .then(() => res.json(user))
+            .then(() => res.json(newFriend))
         }
         )
     } catch (err) {
@@ -134,9 +134,9 @@ router.put('/:userId/friends/:friendId', (req,res)=> {
 })
 
 //TODO - ROUTE THAT DELETES A FRIEND FROM A USER'S FRIENDS, DONT DELETE THE FRIEND AS A USER THOUGH!
-router.delete('/:userId/friends/:friendId', (req,res)=> {
+router.delete('/:userId/friends/:friendId', async (req,res)=> {
     try {
-        User.findById(req.params.userId)
+       let deletedFriend = await User.findById(req.params.userId)
         .then(user => {
             user.removeFriend(req.params.friendId)
             .then(() => res.json(user))

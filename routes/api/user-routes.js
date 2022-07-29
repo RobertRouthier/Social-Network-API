@@ -86,9 +86,13 @@ router.delete("/:userId", async (req, res) => {
 //TODO - ROUTE THAT ADDS A FRIEND TO A USER
 router.put("/:userId/friends/:friendId", async (req, res) => {
   try {
-    let newFriend = await User.findById(req.params.userId).then((user) => {
-      user.addFriend(req.params.friendId).then(() => res.json(newFriend));
-    });
+    let newFriend = await User.findOneAndUpdate(
+      { _id: req.params.userId },
+       { friends: req.params.friendId }
+    )
+    console.log( newFriend)
+    res.status(200).json(newFriend)
+
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -98,11 +102,10 @@ router.put("/:userId/friends/:friendId", async (req, res) => {
 //TODO - ROUTE THAT DELETES A FRIEND FROM A USER'S FRIENDS, DONT DELETE THE FRIEND AS A USER THOUGH!
 router.delete("/:userId/friends/:friendId", async (req, res) => {
   try {
-    let deletedFriend = await User.findById(req.params.userId).then((user) => {
-      user.removeFriend(req.params.friendId).then(() => res.json(user));
-    });
-    console.log("SUCESSFULLY DELETED FRIEND");
-    res.status(200).json("SUCESSFULLY DELETED FRIEND");
+    let deletedFriend = await User.findOneAndUpdate({_id: req.params.userId}, {$pull: {friends: req.params.friendId}}, {new: true})
+    
+    console.log("SUCESSFULLY DELETED FRIEND", deletedFriend);
+    res.status(200).json(deletedFriend);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);

@@ -44,13 +44,14 @@ router.get('/:thoughtId', async (req,res)=> {
 
 
 //TODO: ROUTE TO UPDATE A THOUGHT
-router.put('/',  async (req,res)=> {
+router.put('/:thoughtId',  async (req,res)=> {
     try {
-    let updatedThought = await Thought.findByIdAndUpdate(req.body, {
-        where: {
-            id: req.body.id
-        }
-    })
+    let updatedThought = await Thought.findOneAndUpdate(
+        {_id: req.params.thoughtId},
+        {thoughtText: req.body.thoughtText},
+        {createdAt: req.body.createdAt},
+       
+    )
     console.log(updatedThought)
     res.status(200).json(updatedThought)
     } catch (err) {
@@ -65,7 +66,7 @@ router.put('/',  async (req,res)=> {
 //TODO: ROUTE TO DELETE A THOUGHT BASED ON THOUGHT ID
 router.delete('/:thoughtId', async (req,res)=> {
     try {
-    let deletedThought = await Thought.destroy({
+    let deletedThought = await Thought.findOneAndDelete({
         where: {
             id: req.params.thoughtId
         }
